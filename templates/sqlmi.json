@@ -1,0 +1,84 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "aasSSMISkuName": {
+        "type": "string",
+        "defaultValue": "S0",
+        "metadata": {
+          "description": "The sku name of the Azure Analysis Services server to create. Choose from: B1, B2, D1, S0, S1, S2, S3, S4, S8, S9. Some skus are region specific. See https://docs.microsoft.com/en-us/azure/analysis-services/analysis-services-overview#availability-by-region"
+        }
+      },
+      "aasCapacity": {
+        "type": "int",
+        "defaultValue": 1,
+        "metadata": {
+          "description": "The total number of query replica scale-out instances. Scale-out of more than one instance is supported on selected regions only. See https://docs.microsoft.com/en-us/azure/analysis-services/analysis-services-overview#availability-by-region"
+        }
+      },
+      "aasFirewallSettings": {
+        "type": "object",
+        "defaultValue": {
+          "firewallRules": [
+            {
+              "firewallRuleName": "AllowFromAll",
+              "rangeStart": "0.0.0.0",
+              "rangeEnd": "255.255.255.255"
+            }
+          ],
+          "enablePowerBIService": true
+        },
+        "metadata": {
+          "description": "The inbound firewall rules to define on the server. If not specified, firewall is disabled."
+        }
+      },
+      "aasServerName": {
+          "type": "string",
+          "defaultValue": "",
+          "metadata": {
+              "description": "the name od the analysis server"
+          }
+      } ,
+      "backupBlobContainerUri": {
+          "type": "string",
+          "defaultValue": "",
+          "metadata": {
+              "description": "The SAS URI to a private Azure Blob Storage container with read, write and list permissions. Required only if you intend to use the backup/restore functionality. See https://docs.microsoft.com/en-us/azure/analysis-services/analysis-services-backup"
+          }
+      } 
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Sql/managedInstances",
+            "apiVersion": "2015-05-01-preview",
+            "dependsOn":[
+                "[parameters('virtualNetworkName')]"
+            ],
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "location": "[parameters('location')]",
+            "name": "[parameters('SSMINAME')]",
+            "sku": {
+                "name": "[parameters('SSMISkuName')]"
+            },
+            "properties": {
+                "administratorLogin": "[parameters('administratorLogin')]",
+                "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+                "subnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('ssmiSubnetName'))]",
+                "storageSizeInGB": "[parameters('storageSizeInGB')]",
+                "SSMIVCores": "[parameters('SSMIVCores')]",
+                "licenseType": "[parameters('licenseType')]"
+            }
+        }
+    ],
+    "outputs": {
+      "storageAccountName": {
+        "type": "string",
+        "value": "[parameters('aasServerName')]"
+      }
+    }
+  }
+  
