@@ -39,10 +39,15 @@ resource "azurerm_network_interface" "jbnic" {
   location            = "${azurerm_resource_group.pdw-rg.location}"
   resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
 
+
   ip_configuration {
     name                          = "jbconfiguration"
     subnet_id                     = "${azurerm_subnet.admin-subnet.id}"
     private_ip_address_allocation = "Dynamic"
+  }
+  ip_configuration{
+    name                          = "jbconfigurationpub"
+    public_ip_address_id          = "${azurerm_public_ip.jb-ip.id}"
   }
 }
 
