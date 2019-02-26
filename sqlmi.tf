@@ -82,8 +82,9 @@ resource "azurerm_template_deployment" "ssmi_server-tpl-deploy" {
     "location" = "${var.azure_region}"
     "virtualNetworkName" = "${azurerm_virtual_network.pdw-vnet.name}"
     "subnetName" = "${azurerm_subnet.sqlmi-subnet.name}"
+    "subnetId" = "${azurerm_subnet.sqlmi-subnet.id}"
     "SSMINAME" = "${var.AppName}ssmi"
-    "administratorLogin" = "admin"
+    "administratorLogin" = "sqlmiadmin"
     "administratorLoginPassword" = "P@55word!234"
   }
 

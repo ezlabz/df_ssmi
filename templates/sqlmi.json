@@ -23,6 +23,13 @@
         "description": "Enter subnet name."
       }
     },
+    "subnetId": {
+      "type": "string",
+      "defaultValue": "SSMIsubnet",
+      "metadata": {
+        "description": "Enter subnet name."
+      }
+    },
     "SSMINAME": {
       "type": "string",
       "maxLength": 13,
@@ -81,7 +88,6 @@
     {
       "type": "Microsoft.Sql/managedInstances",
       "apiVersion": "2015-05-01-preview",
-      "dependsOn": ["[parameters('virtualNetworkName')]"],
       "identity": {
         "type": "SystemAssigned"
       },
@@ -93,7 +99,7 @@
       "properties": {
         "administratorLogin": "[parameters('administratorLogin')]",
         "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
-        "subnetId": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')),'/subnets/', variables('subnetName'))]",
+        "subnetId": "[parameters('subnetId')]",
         "storageSizeInGB": "[parameters('storageSizeInGB')]",
         "SSMIVCores": "[parameters('SSMIVCores')]",
         "licenseType": "[parameters('licenseType')]"
