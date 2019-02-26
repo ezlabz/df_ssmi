@@ -1,5 +1,5 @@
 resource "azurerm_subnet" "adf-subnet" {
-  name                 = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}-adfsubnet"
+  name                 = "${var.AppName}${var.LOB}adfsubnet"
   resource_group_name  = "${azurerm_resource_group.pdw-rg.name}"
   virtual_network_name = "${azurerm_virtual_network.pdw-vnet.name}"
   address_prefix       = "${cidrsubnet(var.vnet2_address, 2, 2)}"
@@ -8,7 +8,7 @@ resource "azurerm_subnet" "adf-subnet" {
 
 
 resource "azurerm_network_security_group" "adf" {
-  name                = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}-adfnsg"
+  name                = "${var.AppName}${var.LOB}adfnsg"
   location            = "${var.azure_region}"
   resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
 

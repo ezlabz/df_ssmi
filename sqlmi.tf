@@ -7,7 +7,7 @@ resource "azurerm_subnet" "sqlmi-subnet" {
 }
 
 resource "azurerm_network_security_group" "sqlmi" {
-  name = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}-sqlminsg"
+  name = "${var.AppName}${var.LOB}sqlminsg"
   location = "${var.azure_region}"
   resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
 
@@ -30,7 +30,7 @@ resource "azurerm_network_security_group" "sqlmi" {
 }
 
 resource "azurerm_route_table" "default" {
-  name                = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}-rtdefault"
+  name                = "${var.AppName}${var.LOB}rtdefault"
   resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
   location            = "${var.azure_region}"
   disable_bgp_route_propagation = false
@@ -42,7 +42,7 @@ resource "azurerm_route_table" "default" {
   }
 
   tags {
-    environment = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}"
+    environment = "${var.AppName}-${var.LOB}"
   }
 }
 
@@ -57,13 +57,13 @@ resource "azurerm_subnet_network_security_group_association" "sqlmi" {
 }
 
 resource "azurerm_public_ip" "sql-mi-ip" {
-  name                = "SQLMI-${var.sql_mi_name}-Gate-IP"
+  name                = "SQLMI${var.sql_mi_name}GateIP"
   resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
   location            = "${var.azure_region}"
   allocation_method   = "Dynamic"
   sku                 ="basic"
   tags {
-    environment = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}"
+    environment = "${var.AppName}${var.LOB}"
   }
 }
 
@@ -72,7 +72,7 @@ data "template_file" "ssmi_server" {
 }
 
 resource "azurerm_template_deployment" "ssmi_server-tpl-deploy" {
-  name                = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}-ssmi-server-deploy"
+  name                = "${var.AppName}${var.LOB}ssmiserverdeploy"
   resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
 
   template_body = "${data.template_file.ssmi_server.rendered}"
@@ -82,8 +82,9 @@ resource "azurerm_template_deployment" "ssmi_server-tpl-deploy" {
     "location" = "${var.azure_region}"
     "virtualNetworkName" = "${azurerm_virtual_network.pdw-vnet.name}"
     "subnetName" = "${azurerm_subnet.sqlmi-subnet.name}"
+    "subnetId" = "${azurerm_subnet.sqlmi-subnet.id}"
     "SSMINAME" = "${var.AppName}ssmi"
-    "administratorLogin" = "admin"
+    "administratorLogin" = "sqlmiadmin"
     "administratorLoginPassword" = "P@55word!234"
   }
 
