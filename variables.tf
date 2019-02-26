@@ -25,7 +25,7 @@ variable "azure_subscription_id" {
 
 # The default Azure Region we build in.
 variable "azure_region" {
-  default = "East US"
+  default = "eastus2"
 }
 
 # The Azure SP(Service Principle) used to authenticate to Azure api

@@ -1,5 +1,5 @@
 resource "azurerm_subnet" "cognos-subnet" {
-  name                 = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}-cognossubnet"
+  name                 = "${var.AppName}${var.LOB}cognossubnet"
   resource_group_name  = "${azurerm_resource_group.pdw-rg.name}"
   virtual_network_name = "${azurerm_virtual_network.pdw-vnet.name}"
   address_prefix       = "${cidrsubnet(var.vnet2_address, 2, 3)}"
@@ -7,7 +7,7 @@ resource "azurerm_subnet" "cognos-subnet" {
 }
 
 resource "azurerm_network_security_group" "cognos" {
-  name                = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}-cognosnsg"
+  name                = "${var.AppName}${var.LOB}cognosnsg"
   location            = "${var.azure_region}"
   resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
 

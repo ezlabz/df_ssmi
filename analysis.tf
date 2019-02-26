@@ -3,7 +3,7 @@ data "template_file" "analysis_server" {
 }
 
 resource "azurerm_template_deployment" "analysis_server-tpl-deploy" {
-  name                = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}-analysis-server-deploy"
+  name                = "${var.AppName}${var.LOB}analysisserverdeploy"
   resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
 
   template_body = "${data.template_file.analysis_server.rendered}"

@@ -1,5 +1,5 @@
 resource "azurerm_subnet" "admin-subnet" {
-  name                 = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}-adminsubnet"
+  name                 = "${var.AppName}${var.LOB}adminsubnet"
   resource_group_name  = "${azurerm_resource_group.pdw-rg.name}"
   virtual_network_name = "${azurerm_virtual_network.pdw-vnet.name}"
   address_prefix       = "${cidrsubnet(var.vnet2_address, 2, 0)}"
@@ -8,7 +8,7 @@ resource "azurerm_subnet" "admin-subnet" {
 }
 
 resource "azurerm_network_security_group" "admin_access" {
-  name                = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}-adminnsg"
+  name                = "${var.AppName}${var.LOB}adminnsg"
   location            = "${var.azure_region}"
   resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
 
@@ -35,19 +35,19 @@ resource "azurerm_subnet_network_security_group_association" "admin" {
 }
 
 resource "azurerm_public_ip" "jbip" {
-  name                = "${var.AppName}-jbip"
+  name                = "${var.AppName}jbip"
   resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
   location            = "${var.azure_region}"
   allocation_method   = "Dynamic"
   sku                 = "Basic"
   idle_timeout_in_minutes = 30
   tags {
-    environment = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}"
+    environment = "${var.AppName}-${var.LOB}"
   }
 }
 
 resource "azurerm_network_interface" "jbnic" {
-  name                = "${var.AppName}-jb-nic"
+  name                = "${var.AppName}jbnic"
   location            = "${azurerm_resource_group.pdw-rg.location}"
   resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
   
@@ -71,7 +71,7 @@ output "public_ip_address" {
 }
 
 resource "azurerm_virtual_machine" "jb" {
-  name                  = "${var.AppName}-jb-vm"
+  name                  = "${var.AppName}jbvm"
   location              = "${azurerm_resource_group.pdw-rg.location}"
   resource_group_name   = "${azurerm_resource_group.pdw-rg.name}"
   network_interface_ids = ["${azurerm_network_interface.jbnic.id}"]
@@ -105,7 +105,7 @@ resource "azurerm_virtual_machine" "jb" {
     provision_vm_agent = true
   }
   tags {
-    environment = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}"
+    environment = "${var.AppName}${var.LOB}"
   }
 }
 
