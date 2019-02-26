@@ -2,10 +2,10 @@
 
 DeploymentLifecycle = "test"
 
-AppName = "sample-app"
+AppName = "app"
 
-LOB = "fiserv-bu"
+LOB = "bu"
 
-Owner = "the_user"
+Owner = "theuser"
 
 sql_mi_name = "pdw"
