@@ -19,7 +19,7 @@ resource "azurerm_network_security_group" "admin_access" {
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_ranges    = ["9000", "9003", "1438", "1440", "1452"]
+    destination_port_ranges    = ["9000", "9003", "1433", "1440", "1452","3389"]
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
@@ -34,32 +34,40 @@ resource "azurerm_subnet_network_security_group_association" "admin" {
   network_security_group_id = "${azurerm_network_security_group.admin_access.id}"
 }
 
+resource "azurerm_public_ip" "jbip" {
+  name                = "${var.AppName}-jbip"
+  resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
+  location            = "${var.azure_region}"
+  allocation_method   = "Dynamic"
+  sku                 = "Basic"
+  idle_timeout_in_minutes = 30
+  tags {
+    environment = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}"
+  }
+}
+
 resource "azurerm_network_interface" "jbnic" {
   name                = "${var.AppName}-jb-nic"
   location            = "${azurerm_resource_group.pdw-rg.location}"
   resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
-
-
+  
   ip_configuration {
     name                          = "jbconfiguration"
     subnet_id                     = "${azurerm_subnet.admin-subnet.id}"
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id = "${azurerm_public_ip.jbip.id}"
   }
-  ip_configuration{
-    name                          = "jbconfigurationpub"
-    public_ip_address_id          = "${azurerm_public_ip.jb-ip.id}"
-  }
+
 }
 
-resource "azurerm_public_ip" "jb-ip" {
-  name                = "jb-${azurerm_virtual_machine.jb.name}-Gate-IP"
+data "azurerm_public_ip" "jbip" {
+  name                = "${azurerm_public_ip.jbip.name}"
   resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
-  location            = "${var.azure_region}"
-  allocation_method   = "Dynamic"
-  sku                 ="basic"
-  tags {
-    environment = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}"
-  }
+  depends_on          = ["azurerm_virtual_machine.jb"]
+}
+
+output "public_ip_address" {
+  value = "${data.azurerm_public_ip.jbip.ip_address}"
 }
 
 resource "azurerm_virtual_machine" "jb" {

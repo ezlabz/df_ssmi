@@ -1,5 +1,5 @@
 resource "azurerm_subnet" "sqlmi-subnet" {
-  name                 = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}-sqlmisubnet"
+  name                 = "${var.AppName}${var.LOB}sqlmisubnet"
   resource_group_name  = "${azurerm_resource_group.pdw-rg.name}"
   virtual_network_name = "${azurerm_virtual_network.pdw-vnet.name}"
   address_prefix       = "${cidrsubnet(var.vnet2_address, 2, 1)}"
@@ -65,4 +65,31 @@ resource "azurerm_public_ip" "sql-mi-ip" {
   tags {
     environment = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}"
   }
+}
+
+data "template_file" "ssmi_server" {
+  template = "${file("./templates/sqlmi.json")}"
+}
+
+resource "azurerm_template_deployment" "ssmi_server-tpl-deploy" {
+  name                = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}-ssmi-server-deploy"
+  resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
+
+  template_body = "${data.template_file.ssmi_server.rendered}"
+
+  # these key-value pairs are passed into the ARM Template's `parameters` block
+  parameters {
+    "location" = "${var.azure_region}"
+    "virtualNetworkName" = "${azurerm_virtual_network.pdw-vnet.name}"
+    "subnetName" = "${azurerm_subnet.sqlmi-subnet.name}"
+    "SSMINAME" = "${var.AppName}ssmi"
+    "administratorLogin" = "admin"
+    "administratorLoginPassword" = "P@55word!234"
+  }
+
+  deployment_mode = "Incremental"
+}
+
+output "SSMINAME" {
+  value = "${lookup(azurerm_template_deployment.ssmi_server-tpl-deploy.outputs, "SSMINAME")}"
 }

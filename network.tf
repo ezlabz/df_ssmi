@@ -5,3 +5,11 @@ resource "azurerm_virtual_network" "pdw-vnet" {
   location = "${var.azure_region}"
   address_space       = ["${var.vnet2_address}"]
 }
+
+
+resource "azurerm_virtual_network" "stg-pdw-vnet" {
+  name                = "${var.DeploymentLifecycle}-${var.AppName}-${var.LOB}-stg-vnet"
+  resource_group_name = "${azurerm_resource_group.pdw-rg.name}"
+  location = "${var.azure_region}"
+  address_space       = ["${var.stgvnet2_address}"]
+}
