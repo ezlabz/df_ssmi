@@ -19,13 +19,12 @@ variable "LOB" {}
 
 # Our Azure Subscription.
 variable "azure_subscription_id" {
-  #default = "70852e42-7fc8-4af7-9c87-46b76476d106"
   default = "70852e42-7fc8-4af7-9c87-46b76476d106"
 }
 
 # The default Azure Region we build in.
 variable "azure_region" {
-  default = "eastus2"
+  default = "East US"
 }
 
 # The Azure SP(Service Principle) used to authenticate to Azure api
@@ -43,9 +42,5 @@ variable "analysis_server_name" {
 }
 
 variable "vnet2_address" {
-  default = "10.0.0.0/16"
-}
-
-variable "stgvnet2_address" {
-  default = "10.0.0.0/16"
+  default = ""
 }
