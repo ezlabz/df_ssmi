@@ -75,7 +75,7 @@ resource "azurerm_virtual_machine" "jb" {
   location              = "${azurerm_resource_group.pdw-rg.location}"
   resource_group_name   = "${azurerm_resource_group.pdw-rg.name}"
   network_interface_ids = ["${azurerm_network_interface.jbnic.id}"]
-  vm_size               = "Standard_DS1_v2"
+  vm_size               = "Standard_D8s_v3"
 
   # Uncomment this line to delete the OS disk automatically when deleting the VM
   # delete_os_disk_on_termination = true
@@ -91,15 +91,15 @@ resource "azurerm_virtual_machine" "jb" {
     version   = "latest"
   }
   storage_os_disk {
-    name              = "myosdisk1"
+    name              = "myosdiskjb"
     caching           = "ReadWrite"
     create_option     = "FromImage"
-    managed_disk_type = "Standard_LRS"
+    managed_disk_type = "Premium_LRS"
   }
   os_profile {
     computer_name  = "hostname"
     admin_username = "testadmin"
-    admin_password = "Password1234!"
+    admin_password = "${random_string.password.result}"
   }
   os_profile_windows_config {
     provision_vm_agent = true
@@ -107,6 +107,7 @@ resource "azurerm_virtual_machine" "jb" {
   tags {
     environment = "${var.AppName}${var.LOB}"
   }
+  depends_on = [ "random_string.password"]
 }
 
 
